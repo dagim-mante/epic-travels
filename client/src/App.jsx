@@ -9,7 +9,7 @@ function App() {
   const [venueList, setVenueList] = useState([]);
   const [messages, setMessages] = useState([])
 
-  const mapsAPIKey = import.meta.env.HERE_API_KEY
+  const mapsAPIKey = import.meta.env.VITE_HERE_API_KEY
 
   const handleClick = (location) => {
     setVenuePosition(location)

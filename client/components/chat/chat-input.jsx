@@ -6,7 +6,7 @@ import { useState } from "react";
 export default function ChatInput({inputRef, setMessages}){
   const [input, setInput] = useState('')
   const [thinking, setThinking] = useState(false)
-  const origin = import.meta.env.ORIGIN
+  const origin = import.meta.env.VITE_ORIGIN
 
   const handleSend = async (e) => {
     e.preventDefault()

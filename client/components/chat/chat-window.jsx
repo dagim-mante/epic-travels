@@ -21,7 +21,7 @@ export default function ChatWindow({setUserPosition, messages, setMessages, chat
     from: new Date(2024, 10, 17),
     to: addDays(new Date(2024, 10, 17), 20),
   })
-  const origin = import.meta.env.ORIGIN
+  const origin = import.meta.env.VITE_ORIGIN
 
   useEffect(() => {
     const fillCountry = async () => {

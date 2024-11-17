@@ -66,7 +66,7 @@ const Map = ({apikey, userPosition, venuePosition, setVenueList, setMessages}) =
     const mapRef = useRef(null);
     const map = useRef(null);
     const platform = useRef(null)
-    const origin = import.meta.env.ORIGIN
+    const origin = import.meta.env.VITE_ORIGIN
 
     useEffect(() => {
         // Function to search for attractions
