@@ -62,7 +62,7 @@ function calculateRoute(platform, map, start, destination) {
 }
 
 
-const Map = ({apikey, userPosition, venuePosition, setVenueList, setMessages}) => {
+const Map = ({activeChat, apikey, userPosition, venuePosition, setVenueList, setMessages}) => {
     const mapRef = useRef(null);
     const map = useRef(null);
     const platform = useRef(null)
@@ -102,7 +102,7 @@ const Map = ({apikey, userPosition, venuePosition, setVenueList, setMessages}) =
 
       const getFinalSchedule = async (places) => {
         console.log("places", places)
-        const response = await fetch(`${origin}/test`, {
+        const response = await fetch(`${origin}/chat/${activeChat}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -112,7 +112,7 @@ const Map = ({apikey, userPosition, venuePosition, setVenueList, setMessages}) =
         })
         })
         const r = await response.json()
-        setMessages(r.res)
+        setMessages(r.chat.messages)
       }
 
         // Check if the map object has already been created

@@ -3,7 +3,7 @@ import CountrySelect from "./country-select"
 
 
 import { addDays, format } from "date-fns"
-import { Calendar1Icon, Calendar as CalendarIcon } from "lucide-react"
+import { Calendar as CalendarIcon } from "lucide-react"
  
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -14,9 +14,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-export default function ChatWindow({setUserPosition, messages, setMessages, chatWindowRef}){
+export default function ChatWindow({countryValue, setCountryValue, activeChat, setActiveChat, setUserPosition, messages, setMessages, chatWindowRef}){
   const [open, setOpen] = useState(false)
-  const [countryValue, setCountryValue] = useState("")
   const [date, setDate] = useState({
     from: new Date(2024, 10, 17),
     to: addDays(new Date(2024, 10, 17), 20),
@@ -26,17 +25,21 @@ export default function ChatWindow({setUserPosition, messages, setMessages, chat
   useEffect(() => {
     const fillCountry = async () => {
       if(countryValue.length > 0){
-        const response = await fetch(`${origin}/test`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            prompt: `text:-${countryValue}`
+        try{
+          const response = await fetch(`${origin}/chat/${activeChat}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              prompt: `text:-${countryValue}`
+            })
           })
-        })
-        const r = await response.json()
-        setMessages(r.res)
+          const r = await response.json()
+          setMessages(r.chat.messages.slice(1))
+        }catch(error){
+          console.log(error)
+        }
       }
     }
 
@@ -44,23 +47,26 @@ export default function ChatWindow({setUserPosition, messages, setMessages, chat
   }, [countryValue])
 
   const handleDateSubmit = async () => {
-    console.log(`text:-${date.from.toDateString()}-${date.to.toDateString()}`)
-    const response = await fetch(`${origin}/test`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        prompt: `text:-${date.from}-${date.to}`
+    try{
+      const response = await fetch(`${origin}/chat/${activeChat}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          prompt: `text:-${date.from}-${date.to}`
+        })
       })
-    })
-    const r = await response.json()
-    setMessages(r.res)
+      const r = await response.json()
+      setMessages(r.chat.messages.slice(1))
+    }catch(error){
+      console.log(error)
+    }
   }
 
 
   const getDataOnLocation = async (loc) => {
-    const response = await fetch(`https://geocode.search.hereapi.com/v1/geocode?q=${loc}&limit=1&apiKey=Yg6IepfpRu5Nqn-XWV62wx9Tt3dlZGUvdr1AFhNXqGo`)
+    const response = await fetch(`https://geocode.search.hereapi.com/v1/geocode?q=${loc}&limit=1&apiKey=${import.meta.env.VITE_HERE_API_KEY}`)
     const data = await response.json()
     if(response.status === 200){
       if(data.items.length > 0){
@@ -83,11 +89,47 @@ export default function ChatWindow({setUserPosition, messages, setMessages, chat
   }, [messages]);
 
   if(messages.length === 0){
+    function addIdToLocalStorage(newId) {
+      const existingIds = JSON.parse(localStorage.getItem('chats')) || [];
+    
+      if (!existingIds.includes(newId)) {
+        existingIds.push(newId);
+        localStorage.setItem('chats', JSON.stringify(existingIds));
+        console.log(`ID ${newId} added to localStorage.`);
+      }
+    
+      return existingIds;
+    }
+
+    const startChat = async () => {
+      try{
+        const response = await fetch(`${origin}/new-chat`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        const {chat} = await response.json()
+        if(response.status === 200){
+          console.log(chat)
+          setActiveChat(chat._id)
+          addIdToLocalStorage(chat._id)
+          setMessages(chat.messages.slice(1))
+        }
+      }catch(error){
+        console.log(error)
+      }
+    }
     return (
       <div 
-        className="flex-1 flex items-center justify-center overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-primary scrollbar-track-background"
+        className="flex-1 flex-col flex items-center justify-center overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-primary scrollbar-track-background"
       >
-        <h2>Start chatting with me i can help you plan a trip.</h2>
+        {!activeChat ? (
+          <>
+            <h2>Start chatting with me i can help you plan a trip.</h2>
+            <Button onClick={startChat}>Start chat</Button>
+          </>
+        ) : null }
       </div>
     )
   }

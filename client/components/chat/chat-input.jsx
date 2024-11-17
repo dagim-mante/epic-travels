@@ -3,7 +3,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useState } from "react";
 
-export default function ChatInput({inputRef, setMessages}){
+export default function ChatInput({activeChat, inputRef, setMessages}){
   const [input, setInput] = useState('')
   const [thinking, setThinking] = useState(false)
   const origin = import.meta.env.VITE_ORIGIN
@@ -12,7 +12,7 @@ export default function ChatInput({inputRef, setMessages}){
     e.preventDefault()
     if(input.length > 0){
       setThinking(true)
-      const response = await fetch(`${origin}/test`, {
+      const response = await fetch(`${origin}/chat/${activeChat}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -24,7 +24,7 @@ export default function ChatInput({inputRef, setMessages}){
       const r = await response.json()
       setThinking(false)
       setInput('')
-      setMessages(r.res)
+      setMessages(r.chat.messages.slice(1))
     }
   }
 
