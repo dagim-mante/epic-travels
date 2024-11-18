@@ -24,7 +24,11 @@ const chatInstance = new ChatWatsonx({
 });
 
 app.use(express.json())
-app.use(cors())
+app.use(cors({
+    origin: [process.env.ORIGIN],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    credentials: true
+}))
 
 app.get('/chat/:id', async (req, res) => {
     try {

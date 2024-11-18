@@ -15,14 +15,14 @@ const Home = () => {
       <div className="absolute inset-0 bg-black bg-opacity-50" />
       
       {/* Navigation bar */}
-      <nav className="absolute top-0 left-0 right-0 flex justify-between items-center p-4 z-10">
-        <a href="/" className="text-white text-2xl font-bold">
+      <nav className="bg-white absolute top-0 left-0 right-0 flex justify-between items-center p-4 z-10">
+        <Link to="/" className="text-white text-2xl font-bold">
           <span className="sr-only">Epic Travels Logo</span>
-          <img src="/logo.png" className="w-44 h-16" alt="Logo" />
-        </a>
+          <img src="/logo.png" className="w-36 h-24" alt="Logo" />
+        </Link>
         <Link 
           to="/chat" 
-          className="px-4 py-2 text-white border border-white rounded hover:bg-white hover:text-black transition-colors"
+          className="px-4 py-2 text-white border border-white rounded bg-blue-700 hover:bg-blue-900 hover:text-white transition-colors"
         >
           Get Started
         </Link>
