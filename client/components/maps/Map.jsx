@@ -68,39 +68,38 @@ const Map = ({activeChat, apikey, userPosition, venuePosition, setVenueList, set
     const platform = useRef(null)
     const origin = import.meta.env.VITE_ORIGIN
 
-    useEffect(() => {
         // Function to search for attractions
     const searchForAttractions = async (lat, lng) => {
         if(map.current){
             const service = platform.current.getSearchService();
             service.browse(
-              {
+            {
                 at: `${lat},${lng}`,
                 categories: '100-1000-0002,300-3000-0025,200-2000-0000,300-3100-0000', // Categories
                 limit: 10, // Limit results
-              },
-              (result) => {
+            },
+            (result) => {
                 console.log(result.items); // Log results to the console
-      
+    
                 // Add markers to the map for each result
                 result.items.forEach((item) => {
-                  const marker = new H.map.Marker({
+                const marker = new H.map.Marker({
                     lat: item.position.lat,
                     lng: item.position.lng,
-                  });
-                  map.current.addObject(marker);
+                });
+                map.current.addObject(marker);
                 });
                 setVenueList(result.items)
                 getFinalSchedule(result.items)
-              },
-              (error) => {
+            },
+            (error) => {
                 console.error('Error fetching attractions:', error);
-              }
+            }
             );
         }
-      };
+    };
 
-      const getFinalSchedule = async (places) => {
+    const getFinalSchedule = async (places) => {
         console.log("places", places)
         const response = await fetch(`${origin}/chat/${activeChat}`, {
         method: 'POST',
@@ -113,7 +112,9 @@ const Map = ({activeChat, apikey, userPosition, venuePosition, setVenueList, set
         })
         const r = await response.json()
         setMessages(r.chat.messages)
-      }
+    }
+    
+    useEffect(() => {
 
         // Check if the map object has already been created
         if (!map.current) {
@@ -154,7 +155,15 @@ const Map = ({activeChat, apikey, userPosition, venuePosition, setVenueList, set
         if(venuePosition){
             calculateRoute(platform.current, map.current, userPosition, venuePosition)
         }
-    }, [venuePosition, apikey, userPosition]);
+    }, [venuePosition, apikey]);
+
+    useEffect(() => {
+        if(userPosition && map.current){
+            map.current.setCenter(userPosition)
+            map.current.setZoom(10)
+            searchForAttractions(userPosition.lat, userPosition.lng)
+        }
+    }, [userPosition])
 
     // Return a div element to hold the map
     return (
